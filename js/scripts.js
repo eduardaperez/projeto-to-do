@@ -63,6 +63,8 @@ const saveTodo = (text) => {
 
     // reset após salvar
     resetTagButton();
+    todoInput.value = "";
+    todoInput.focus();
     
 }
 
@@ -84,7 +86,6 @@ todoForm.addEventListener("submit", (e) => {
         console.log(inputValue);
         // Salvar input
         saveTodo(inputValue);
-        todoInput.value = "";
     }
 });
 
