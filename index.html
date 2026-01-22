@@ -18,22 +18,36 @@
             <p>Adicione a sua tarefa:</p>
             <div class="form-control">
                 <input type="text" id="todo-input" placeholder="O que você vai fazer?">
-                <button>
-                    <i class="fa fa-tag"></i>
+                <button type="button" class="tag-btn">    
+                    <i class="fa fa-tag" ></i>
                 </button>
+                <div class="color-picker">
+                    <span id="red" data-color="#da1c1c"></span>
+                    <span id="orange" data-color="#f17611"></span>
+                    <span id="yellow" data-color="#e2b913"></span>
+                    <span id="green" data-color="#129724"></span>
+                    <span id="no-tag" data-color="#102f5e"></span>
+                </div>
                 <button type="submit">
                     <i class="fas fa-plus"></i>
                 </button>
             </div>
         </form>
-        <form id="edit-form" class="">
+        <form id="edit-form" class="hide">
             <p>Edite a sua tarefa:</p>
             <div>
                 <div class="form-control">
                     <input type="text" id="edit-input">
-                    <button id="tag-btn">    
+                    <button class="tag-btn">    
                         <i class="fa fa-tag" ></i>
                     </button>
+                    <div class="color-picker">
+                        <span data-color="red"></span>
+                        <span data-color="orange"></span>
+                        <span data-color="yellow"></span>
+                        <span data-color="green"></span>
+                        <span data-color="none"></span>
+                    </div>
                 </div>
                 <div class="form-control">
                     <button type="submit">
@@ -64,29 +78,8 @@
                 </select>
             </div>
         </div>
-        <div class="todo done">
-            <h3>Tarefa 1</h3>
-            <button class="finish-todo">
-                <i class="fa-solid fa-check"></i>
-            </button>
-            <button class="finish-todo">
-                <i class="fa-solid fa-pen"></i>
-            </button>
-            <button class="finish-todo">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div>
-        <div class="todo">
-            <h3>Tarefa 1</h3>
-            <button class="finish-todo">
-                <i class="fa-solid fa-check"></i>
-            </button>
-            <button class="finish-todo">
-                <i class="fa-solid fa-pen"></i>
-            </button>
-            <button class="finish-todo">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+        <div id="todo-list">
+            <!-- Códigos em JS -->
         </div>
     </div>
 </body>
