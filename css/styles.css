@@ -131,6 +131,10 @@ select {
     transition: 0.3s;
 }
 
+.tag {
+    flex: 0.12;
+}
+
 .todo h3 {
     flex: 1;
     font-size: 1rem;
@@ -145,3 +149,27 @@ select {
     font-style: italic;
     text-decoration: line-through;
 }
+
+/* Paleta */
+.color-picker {
+  display: none;
+  gap: 6px;
+  background: #fdfdfd;
+  padding: 6px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.15);
+}
+
+.color-picker span {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* cores */
+.color-picker span[data-color="#da1c1c"] { background: #da1c1c; }
+.color-picker span[data-color="#f17611"] { background: #f17611; }
+.color-picker span[data-color="#e2b913"] { background: #e2b913; }
+.color-picker span[data-color="#129724"] { background: #129724; }
+.color-picker span[data-color="#102f5e"] { background: #fdfdfd;  border: 1px solid #102f5e;}
