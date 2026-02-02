@@ -7,32 +7,32 @@ const editInput = document.querySelector("#edit-input");
 const cancelEditBtn = document.querySelector("#cancel-edit-btn");
 
 
-const tagButton = document.querySelector(".tag-btn");
-const colorPicker = document.querySelector(".color-picker");
-
-let selectedTagColor = null;
+// const tagButton = document.querySelector(".tag-btn");
+// const colorPicker = document.querySelector(".color-picker");
+// let selectedTagColor = null;
 
 // Funções
+
 const saveTodo = (text) => {
     //criando a div
     const todo = document.createElement("div");
     todo.classList.add("todo");
 
     // salvando a tag
-    todo.dataset.tagColor = selectedTagColor || "";
+    // todo.dataset.tagColor = selectedTagColor || "";
 
-    // criando a tag visual
-    const tag = document.createElement("div");
-    tag.classList.add("tag");
+    // // criando a tag visual
+    // const tag = document.createElement("div");
+    // tag.classList.add("tag");
 
-    if(selectedTagColor) {
-        const tagIcon = document.createElement("i");
-        tagIcon.classList.add("fa", "fa-tag")
+    // if(selectedTagColor) {
+    //     const tagIcon = document.createElement("i");
+    //     tagIcon.classList.add("fa", "fa-tag")
 
-        tagIcon.style.color = selectedTagColor;
-        console.log(tagIcon)
-        tag.appendChild(tagIcon);
-    }
+    //     tagIcon.style.color = selectedTagColor;
+    //     console.log(tagIcon)
+    //     tag.appendChild(tagIcon);
+    // }
 
     // criando o title
     const todoTitle = document.createElement("h3");
@@ -53,7 +53,7 @@ const saveTodo = (text) => {
 
 
     //adicionando tudo
-    todo.appendChild(tag);
+    // todo.appendChild(tag);
     todo.appendChild(todoTitle);
     todo.appendChild(doneBtn);
     todo.appendChild(editBtn);
@@ -62,19 +62,19 @@ const saveTodo = (text) => {
     todoList.appendChild(todo);
 
     // reset após salvar
-    resetTagButton();
+    // resetTagButton();
     todoInput.value = "";
     todoInput.focus();
     
 }
 
 
-const resetTagButton = () => {
-    selectedTagColor = null;
+// const resetTagButton = () => {
+//     selectedTagColor = null;
 
-    tagButton.style.backgroundColor = "#fdfdfd";
-    tagButton.querySelector("i").style.color = "#102f5e";
-};
+//     tagButton.style.backgroundColor = "#fdfdfd";
+//     tagButton.querySelector("i").style.color = "#102f5e";
+// };
 
 // Eventos
 todoForm.addEventListener("submit", (e) => {
@@ -89,23 +89,42 @@ todoForm.addEventListener("submit", (e) => {
     }
 });
 
-tagButton.addEventListener("click", () => {
-  colorPicker.style.display =
-    colorPicker.style.display === "flex" ? "none" : "flex";
-});
+// tagButton.addEventListener("click", () => {
+//   colorPicker.style.display =
+//     colorPicker.style.display === "flex" ? "none" : "flex";
+// });
 
-document.querySelectorAll(".color-picker span").forEach(color => {
-  color.addEventListener("click", (e) => {
+// document.querySelectorAll(".color-picker span").forEach(color => {
+//   color.addEventListener("click", (e) => {
 
-    if(color.id !== "no-tag") {
-        selectedTagColor = color.dataset.color;
-    } else {
-        selectedTagColor = null;
+//     if(color.id !== "no-tag") {
+//         selectedTagColor = color.dataset.color;
+//     } else {
+//         selectedTagColor = null;
+//     }
+
+//     tagButton.style.backgroundColor = "#fdfdfd";
+//     tagButton.querySelector("i").style.color = selectedTagColor;
+
+//     colorPicker.style.display = "none";
+//   });
+// });
+
+document.addEventListener("click", (e) => {
+    const targetEl = e.target;
+    const parentEl = targetEl.closest("div");
+
+    if(targetEl.classList.contains("finish-todo")) {
+        parentEl.classList.toggle("done")
     }
 
-    tagButton.style.backgroundColor = "#fdfdfd";
-    tagButton.querySelector("i").style.color = selectedTagColor;
+    if(targetEl.classList.contains("remove-todo")) {
+        if(window.confirm("Tem certeza que deseja excluir a tarefa?")) {
+            parentEl.remove();
+        }
+    }
 
-    colorPicker.style.display = "none";
-  });
+    if(targetEl.classList.contains("edit-todo")) {
+        
+    }
 });
