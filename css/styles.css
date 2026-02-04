@@ -160,6 +160,10 @@ select {
   box-shadow: 0 4px 10px rgba(0,0,0,.15);
 }
 
+.color-picker.show {
+    display: flex;
+}
+
 .color-picker span {
   width: 18px;
   height: 18px;

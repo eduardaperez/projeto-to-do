@@ -9,38 +9,27 @@ const searchInput = document.querySelector("#search-input");
 const eraseBtn = document.querySelector("#erase-button");
 const filterBtn = document.querySelector("#filter-select");
 
-let oldInputValue;
+const tagsBtn = document.querySelectorAll(".tag-btn");
+const colorPicker = document.querySelector(".color-picker");
 
-// const tagButton = document.querySelector(".tag-btn");
-// const colorPicker = document.querySelector(".color-picker");
-// let selectedTagColor = null;
+let oldInputValue;
+let selectedColor = null;
 
 // Funções
 
-const saveTodo = (text) => {
+const saveTodo = (text, color = null) => {
   //criando a div
   const todo = document.createElement("div");
   todo.classList.add("todo");
 
-  // salvando a tag
-  // todo.dataset.tagColor = selectedTagColor || "";
-
-  // // criando a tag visual
-  // const tag = document.createElement("div");
-  // tag.classList.add("tag");
-
-  // if(selectedTagColor) {
-  //     const tagIcon = document.createElement("i");
-  //     tagIcon.classList.add("fa", "fa-tag")
-
-  //     tagIcon.style.color = selectedTagColor;
-  //     console.log(tagIcon)
-  //     tag.appendChild(tagIcon);
-  // }
-
   // criando o title
   const todoTitle = document.createElement("h3");
   todoTitle.innerText = text;
+
+  if (color) {
+    todo.style.borderLeft = `6px solid ${color}`;
+    todo.dataset.color = color;
+  }
 
   // criando os botões
   const doneBtn = document.createElement("button");
@@ -56,7 +45,6 @@ const saveTodo = (text) => {
   deleteBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
 
   //adicionando tudo
-  // todo.appendChild(tag);
   todo.appendChild(todoTitle);
   todo.appendChild(doneBtn);
   todo.appendChild(editBtn);
@@ -65,7 +53,6 @@ const saveTodo = (text) => {
   todoList.appendChild(todo);
 
   // reset após salvar
-  // resetTagButton();
   todoInput.value = "";
   todoInput.focus();
 };
@@ -84,6 +71,14 @@ const updateTodo = (text) => {
 
     if (todoTitle.innerText === oldInputValue) {
       todoTitle.innerText = text;
+
+      if (selectedColor) {
+        todo.style.borderLeft = `6px solid ${selectedColor}`;
+        todo.dataset.color = selectedColor;
+      } else {
+        todo.style.borderLeft = "";
+        delete todo.dataset.color;
+      }
     }
   });
 };
@@ -129,12 +124,40 @@ const filterTodos = (filterValue) => {
       break;
   }
 };
-// const resetTagButton = () => {
-//     selectedTagColor = null;
 
-//     tagButton.style.backgroundColor = "#fdfdfd";
-//     tagButton.querySelector("i").style.color = "#102f5e";
-// };
+const toggleColorPicker = (formControl, submitBtn) => {
+  if (tagContainer.parentElement === formControl) {
+    tagContainer.classList.toggle("show");
+  } else {
+    formControl.insertBefore(tagContainer, submitBtn);
+    tagContainer.classList.add("show");
+  }
+};
+
+const paintTagIcon = (formControl, color) => {
+  const icon = formControl.querySelector(".tag-btn i");
+
+  if (!color) {
+    icon.style.color = ""; // volta ao padrão
+  } else {
+    icon.style.color = color;
+  }
+};
+
+const resetTagIcons = () => {
+  selectedColor = null;
+
+  const todoFormControl = todoForm.querySelector(".form-control");
+  paintTagIcon(todoFormControl, null);
+
+  const editFormControl = editForm.querySelector(".form-control");
+  paintTagIcon(editFormControl, null);
+};
+
+const closeColorPicker = () => {
+  tagContainer.classList.remove("show");
+  resetTagIcons();
+};
 
 // Eventos
 todoForm.addEventListener("submit", (e) => {
@@ -143,10 +166,11 @@ todoForm.addEventListener("submit", (e) => {
   const inputValue = todoInput.value;
 
   if (inputValue) {
-    console.log(inputValue);
     // Salvar input
-    saveTodo(inputValue);
+    saveTodo(inputValue, selectedColor);
+    selectedColor = null; // reset
   }
+  closeColorPicker();
 });
 
 document.addEventListener("click", (e) => {
@@ -170,15 +194,26 @@ document.addEventListener("click", (e) => {
 
   if (targetEl.classList.contains("edit-todo")) {
     toggleForms();
+    const editFormControl = editForm.querySelector(".form-control");
+
+    if (parentEl.dataset.color) {
+      selectedColor = parentEl.dataset.color;
+
+      // mostrar seletor no form de edição
+      const submitBtn = editFormControl.querySelector("button[type='submit']");
+      editFormControl.insertBefore(tagContainer, submitBtn);
+    }
 
     editInput.value = todoTitle;
     oldInputValue = todoTitle;
+    paintTagIcon(editFormControl, selectedColor);
   }
 });
 
 cancelEditBtn.addEventListener("click", (e) => {
   e.preventDefault();
   toggleForms();
+  resetTagIcons();
 });
 
 editForm.addEventListener("submit", (e) => {
@@ -191,6 +226,8 @@ editForm.addEventListener("submit", (e) => {
   }
 
   toggleForms();
+  resetTagIcons();
+  closeColorPicker();
 });
 
 searchInput.addEventListener("keyup", (e) => {
@@ -212,23 +249,43 @@ filterBtn.addEventListener("change", (e) => {
   filterTodos(filterValue);
 });
 
-// tagButton.addEventListener("click", () => {
-//   colorPicker.style.display =
-//     colorPicker.style.display === "flex" ? "none" : "flex";
-// });
+const tagContainer = document.createElement("div");
+tagContainer.classList.add("color-picker");
 
-// document.querySelectorAll(".color-picker span").forEach(color => {
-//   color.addEventListener("click", (e) => {
+tagContainer.innerHTML = `
+            <span data-color="#da1c1c"></span>
+            <span data-color="#f17611"></span>
+            <span data-color="#e2b913"></span>
+            <span data-color="#129724"></span>
+            <span id="no-tag" data-color="#102f5e"></span>
+            `;
 
-//     if(color.id !== "no-tag") {
-//         selectedTagColor = color.dataset.color;
-//     } else {
-//         selectedTagColor = null;
-//     }
+tagsBtn.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const formControl = btn.closest(".form-control");
+    const submitBtn = formControl.querySelector("button[type='submit']");
 
-//     tagButton.style.backgroundColor = "#fdfdfd";
-//     tagButton.querySelector("i").style.color = selectedTagColor;
+    toggleColorPicker(formControl, submitBtn);
+  });
+});
 
-//     colorPicker.style.display = "none";
-//   });
-// });
+tagContainer.addEventListener("click", (e) => {
+  const colorEl = e.target.closest("span");
+  if (!colorEl) return;
+
+  const formControl = tagContainer.parentElement;
+
+  if (colorEl.id === "no-tag") {
+    selectedColor = null;
+  } else {
+    selectedColor = colorEl.dataset.color;
+  }
+
+  document
+    .querySelectorAll(".color-picker span")
+    .forEach((span) => span.classList.remove("active"));
+
+  colorEl.classList.add("active");
+  paintTagIcon(formControl, selectedColor);
+  tagContainer.classList.remove("show");
+});
