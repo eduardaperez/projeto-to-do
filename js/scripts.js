@@ -17,7 +17,7 @@ let selectedColor = null;
 
 // Funções
 
-const saveTodo = (text, color = null) => {
+const saveTodo = (text, color = null, done = 0, save = 1) => {
   //criando a div
   const todo = document.createElement("div");
   todo.classList.add("todo");
@@ -50,6 +50,15 @@ const saveTodo = (text, color = null) => {
   todo.appendChild(editBtn);
   todo.appendChild(deleteBtn);
 
+  // utilizando dados da LocalStorage
+  if (done) {
+    todo.classList.add("done");
+  }
+
+  if (save) {
+    saveTodoLocalStorage({ text, color, done });
+  }
+
   todoList.appendChild(todo);
 
   // reset após salvar
@@ -79,6 +88,8 @@ const updateTodo = (text) => {
         todo.style.borderLeft = "";
         delete todo.dataset.color;
       }
+
+      updateTodoLocalStorage(oldInputValue, text, selectedColor);
     }
   });
 };
@@ -125,6 +136,12 @@ const filterTodos = (filterValue) => {
   }
 };
 
+const todoExist = (text) => {
+  const todos = getTodoLocalStorage();
+
+  return todos.some((todo) => todo.text.toLowerCase() === text.toLowerCase());
+};
+
 const toggleColorPicker = (formControl, submitBtn) => {
   if (tagContainer.parentElement === formControl) {
     tagContainer.classList.toggle("show");
@@ -165,6 +182,11 @@ todoForm.addEventListener("submit", (e) => {
 
   const inputValue = todoInput.value;
 
+  if (todoExist(inputValue)) {
+    window.alert("Já existe uma tarefa com este nome.");
+    return;
+  }
+
   if (inputValue) {
     // Salvar input
     saveTodo(inputValue, selectedColor);
@@ -184,11 +206,13 @@ document.addEventListener("click", (e) => {
 
   if (targetEl.classList.contains("finish-todo")) {
     parentEl.classList.toggle("done");
+    updateStatusTodoLocalStorage(todoTitle);
   }
 
   if (targetEl.classList.contains("remove-todo")) {
     if (window.confirm("Tem certeza que deseja excluir a tarefa?")) {
       parentEl.remove();
+      removeTodoLocalStorage(todoTitle);
     }
   }
 
@@ -222,6 +246,14 @@ editForm.addEventListener("submit", (e) => {
   const editInputValue = editInput.value;
 
   if (editInputValue) {
+    if (
+      todoExist(editInputValue) &&
+      editInputValue.toLowerCase() !== oldInputValue.toLowerCase()
+    ) {
+      window.alert("Já existe uma tarefa com este nome.");
+      return;
+    }
+
     updateTodo(editInputValue);
   }
 
@@ -289,3 +321,60 @@ tagContainer.addEventListener("click", (e) => {
   paintTagIcon(formControl, selectedColor);
   tagContainer.classList.remove("show");
 });
+
+// Local Storage
+const getTodoLocalStorage = () => {
+  const todos = JSON.parse(localStorage.getItem("todos")) || [];
+
+  return todos;
+};
+
+const loadTodos = () => {
+  const todos = getTodoLocalStorage();
+
+  todos.forEach((todo) => {
+    saveTodo(todo.text, todo.color, todo.done, 0);
+  });
+};
+
+const saveTodoLocalStorage = (todo) => {
+  // pegar todos
+  const todos = getTodoLocalStorage();
+  // add novo todo
+  todos.push(todo);
+  // salvar na ls
+  localStorage.setItem("todos", JSON.stringify(todos));
+};
+
+const removeTodoLocalStorage = (todoText) => {
+  const todos = getTodoLocalStorage();
+
+  const filteredTodos = todos.filter((todo) => todo.text !== todoText);
+
+  localStorage.setItem("todos", JSON.stringify(filteredTodos));
+};
+
+const updateStatusTodoLocalStorage = (todoText) => {
+  const todos = getTodoLocalStorage();
+
+  todos.map((todo) =>
+    todo.text === todoText ? (todo.done = !todo.done) : null,
+  );
+
+  localStorage.setItem("todos", JSON.stringify(todos));
+};
+
+const updateTodoLocalStorage = (todoOldText, todoNewText, todoNewColor) => {
+  const todos = getTodoLocalStorage();
+
+  todos.map((todo) => {
+    if (todo.text === todoOldText) {
+      todo.text = todoNewText;
+      todo.color = todoNewColor;
+    }
+  });
+
+  localStorage.setItem("todos", JSON.stringify(todos));
+};
+
+loadTodos();
